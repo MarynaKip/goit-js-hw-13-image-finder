@@ -11,8 +11,17 @@ export default class NewPixabayApi {
     return fetch(url)
       .then(response => response.json())
       .then(({ hits }) => {
+        this.incrementPage();
         return hits;
       });
+  }
+
+  incrementPage() {
+    this.page += 1;
+  }
+
+  resetPage() {
+    this.page = 1;
   }
 
   get query() {

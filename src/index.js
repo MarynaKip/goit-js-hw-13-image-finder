@@ -1,5 +1,6 @@
-//import './styles.css';
+import './styles.css';
 import NewPixabayApi from './js/fetchPictures';
+import LoadMoreBtn from './js/load-more';
 import picturesTemplate from './templates/pictureTemplate.hbs';
 
 const refs = {
@@ -8,20 +9,37 @@ const refs = {
 };
 
 const newPixabayApi = new NewPixabayApi();
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '[data-action="load-more"]',
+  hidden: true,
+});
 
-refs.searchForm.addEventListener('submit', toSearch);
+refs.searchForm.addEventListener('submit', onSearch);
+loadMoreBtn.refs.button.addEventListener('click', () => {
+  window.scrollTo({
+    top: window.screen.height,
 
-function toSearch(event) {
+    behavior: 'smooth',
+  });
+  fetchPictures();
+});
+
+function onSearch(event) {
   event.preventDefault();
 
   newPixabayApi.query = event.currentTarget.elements.query.value;
 
+  loadMoreBtn.show();
+  newPixabayApi.resetPage();
+  clearGalleryContainer();
   fetchPictures();
 }
 
 function fetchPictures() {
+  loadMoreBtn.disable();
   newPixabayApi.fetchPictures().then(elements => {
     appendPictures(elements);
+    loadMoreBtn.enable();
   });
 }
 
@@ -30,4 +48,8 @@ function appendPictures(pictures) {
     'beforeend',
     picturesTemplate(pictures),
   );
+}
+
+function clearGalleryContainer() {
+  refs.galleryContainer.innerHTML = '';
 }
