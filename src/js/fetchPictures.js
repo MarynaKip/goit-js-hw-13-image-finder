@@ -12,8 +12,17 @@ export default class NewPixabayApi {
       .then(response => response.json())
       .then(({ hits }) => {
         this.incrementPage();
+
         return hits;
       });
+  }
+
+  get page() {
+    return this.constructor.page;
+  }
+
+  set page(newPage) {
+    this.constructor.page = newPage;
   }
 
   incrementPage() {

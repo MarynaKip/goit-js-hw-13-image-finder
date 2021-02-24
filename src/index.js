@@ -16,11 +16,6 @@ const loadMoreBtn = new LoadMoreBtn({
 
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', () => {
-  window.scrollTo({
-    top: window.screen.height,
-
-    behavior: 'smooth',
-  });
   fetchPictures();
 });
 
@@ -32,13 +27,20 @@ function onSearch(event) {
   loadMoreBtn.show();
   newPixabayApi.resetPage();
   clearGalleryContainer();
+
   fetchPictures();
 }
 
 function fetchPictures() {
   loadMoreBtn.disable();
+
   newPixabayApi.fetchPictures().then(elements => {
     appendPictures(elements);
+    window.scrollTo({
+      top: document.documentElement.offsetHeight,
+
+      behavior: 'smooth',
+    });
     loadMoreBtn.enable();
   });
 }
