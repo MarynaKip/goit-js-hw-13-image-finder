@@ -1,21 +1,22 @@
-import './styles.css';
+import { alert, defaultModules } from '@pnotify/core';
+import '@pnotify/core/dist/PNotify.css';
+import * as PNotifyMobile from '@pnotify/mobile';
+import '@pnotify/mobile/dist/PNotifyMobile.css';
+
+defaultModules.set(PNotifyMobile, {});
+
+import './styles/styles.css';
 import NewPixabayApi from './js/fetchPictures';
 import LoadMoreBtn from './js/load-more';
-import picturesTemplate from './templates/pictureTemplate.hbs';
 
-const refs = {
-  searchForm: document.querySelector('.search-form'),
-  galleryContainer: document.querySelector('.gallery'),
-  scrollButton: document.querySelector('.scrollButton'),
-};
+import picturesTemplate from './templates/pictureTemplate.hbs';
+import refs from './js/refs';
 
 const newPixabayApi = new NewPixabayApi();
 const loadMoreBtn = new LoadMoreBtn({
   selector: '[data-action="load-more"]',
   hidden: true,
 });
-
-const heightArray = [];
 
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', () => {
@@ -24,6 +25,13 @@ loadMoreBtn.refs.button.addEventListener('click', () => {
 
 function onSearch(event) {
   event.preventDefault();
+
+  if (event.currentTarget.elements.query.value === '') {
+    alert({
+      text: 'Please enter a more specific query!',
+    });
+    return;
+  }
 
   newPixabayApi.query = event.currentTarget.elements.query.value;
 
@@ -40,25 +48,8 @@ function fetchPictures() {
   newPixabayApi.fetchPictures().then(elements => {
     appendPictures(elements);
 
-    // console.log(newPixabayApi.page);
-
-    heightArray.push(document.documentElement.offsetHeight);
-    console.log(heightArray);
-    const element = newPixabayApi.page - 2;
-    const height =
-      // refs.galleryContainer.scrollHeight -
-      document.documentElement.offsetHeight -
-      (heightArray[element] - heightArray[element - 1]) -
-      refs.scrollButton.clientHeight +
-      refs.galleryContainer.lastElementChild.clientHeight;
-    // console.log(document.documentElement.offsetHeight);
-    // console.log(heightArray[element] - heightArray[element - 1]);
-    // console.log(refs.scrollButton.clientHeight);
-    // console.log(refs.galleryContainer.lastElementChild.clientHeight);
-    // console.log(height);
-
     window.scrollTo({
-      top: height,
+      top: refs.galleryContainer.scrollHeight,
 
       behavior: 'smooth',
     });

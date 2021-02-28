@@ -17,14 +17,6 @@ export default class NewPixabayApi {
       });
   }
 
-  get page() {
-    return this.constructor.page;
-  }
-
-  set page(newPage) {
-    this.constructor.page = newPage;
-  }
-
   incrementPage() {
     this.page += 1;
   }
